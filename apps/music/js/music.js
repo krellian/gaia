@@ -1,5 +1,5 @@
 var Music = {
-  playingSong: false,
+  playing: false,
 
   init: function musicInit() {
     var db = this.db;
@@ -12,27 +12,27 @@ var Music = {
       if (!target)
         return;
       
-      db.getSong(target.id, function playSong(song) {
-        self.playSong(song);
+      db.getSong(target.id, function play(song) {
+        self.play(song);
       });
     });
 
     window.addEventListener('keypress', function keyPressHandler(evt) {
-      if (Music.playingSong && evt.keyCode == evt.DOM_VK_ESCAPE) {
-        console.log("escape pressed");
-        Music.stopSong();
-        Music.showSongList();
+      if (self.playing && evt.keyCode == evt.DOM_VK_ESCAPE) {
+        self.stop();
+        self.showSongList();
         evt.preventDefault();
       }
     });
 
-    Music.showSongList();
+    self.showSongList();
   },
 
-  buildSongList: function musicBuildSongList (songs) {
+  buildSongList: function musicBuildSongList(songs) {
     var content = '';
     songs.forEach(function showMetadata(song) {
-      content += '<li class="song"><a id="' + song.id + '" href="#">' + song.title + ' - ' + song.artist + '</a></li>';
+      content += '<li class="song"><a id="' + song.id + '" href="#">' +
+        song.title + ' - ' + song.artist + '</a></li>';
     });
     document.getElementById('songs').innerHTML = content;
   },
@@ -46,11 +46,11 @@ var Music = {
       document.getElementById(id).classList.add('hidden');
     });
 
-   Music.playingSong = false;
+   this.playing = false;
     
   },
 
-  playSong: function musicPlaySong(song) {
+  play: function musicPlay(song) {
     ['songs', 'musicHeader'].forEach(function hideElement(id) {
       document.getElementById(id).classList.add('hidden');
     });
@@ -63,10 +63,10 @@ var Music = {
     var src = 'data:audio/ogg;base64,' + song.data;
     playerAudio.setAttribute("src", src);
 
-    Music.playingSong = true;
+    this.playing = true;
   },
 
-  stopSong: function musicStopSong(song) {
+  stop: function musicStop(song) {
     var playerAudio = document.getElementById('playerAudio');
     playerAudio.pause();
   }
